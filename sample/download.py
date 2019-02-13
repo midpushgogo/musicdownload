@@ -5,12 +5,12 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 
 class spider():
     def __init__(self, name, singer=None):
+        self.name = name
+        self.sess = requests.session()
         if singer is None:
             self.find()
         else:
-            self.singer = singer
-        self.name = name
-        self.sess = requests.session()
+            self.pattern = re.compile(singer)
 
     def url_spider(self):
         api = ['https://api.bzqll.com/music/netease/search?key=579621905&s={}&type=song&limit=5&offset=0',
@@ -20,8 +20,26 @@ class spider():
             req = self.sess.get(url=i.format(self.name))
             data = req.json()["data"]
             for i in data:
-                if i['singer'] == self.singer:
+                match = self.pattern.search(i["singer"])
+                if match:
                     return i["url"]
+        print('未搜索到相关歌曲')
+
+
+    def find(self):
+        req = requests.get('http://baike.baidu.com/search/word', headers=dn_headers, params={'word': '龙卷风'})
+        # date=str(req.content,'utf-8')
+        req.encoding = 'utf-8'
+        m = re.findall(r'title="(.*?).{2}的?歌曲"', req.text)
+        print('有如下歌手的歌曲版本：\n')
+        for i in m:
+            print(i,'\n')
+        singer=input('请输入歌手：')
+        self.pattern = re.compile(singer)
+
+
+
+
 
     def downloader(self, url):
         size = 0
@@ -52,11 +70,10 @@ dn_headers = {
             'Accept-Language': 'zh-CN,zh;q=0.9'}
 
 if __name__ == '__main__':
+    name = sys.argv[1]
     if len(sys.argv)==2:
-        name = sys.argv[1]
         singer=None
     elif len(sys.argv)==3:
-        name = sys.argv[1]
         singer = sys.argv[2]
 
     a = spider(name, singer)
