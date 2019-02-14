@@ -27,7 +27,7 @@ class spider():
 
 
     def find(self):
-        req = requests.get('http://baike.baidu.com/search/word', headers=dn_headers, params={'word': '龙卷风'})
+        req = requests.get('http://baike.baidu.com/search/word', headers=dn_headers, params={'word': self.name})
         # date=str(req.content,'utf-8')
         req.encoding = 'utf-8'
         m = re.findall(r'title="(.*?).{2}的?歌曲"', req.text)
