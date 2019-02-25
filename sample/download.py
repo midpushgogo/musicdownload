@@ -49,31 +49,34 @@ class spider():
         '''
 
         # 判断输入是歌手还是歌曲名
-        req = self.sess.get(url=api[0].format(a, 1))
-        data = req.json()["data"][0]
-        match = re.search(a, data["singer"])
-
-        if match:
-            self.singer=a
-            self.pattern = re.compile(a)
-            for n, i in enumerate(api):
-                req = self.sess.get(url=i.format(a, 5))
-                data = req.json()["data"]
-                print('from',api_name[n])
-                for j in data:
-                    if self.pattern.search(j["singer"]):
-                        print(j['name'],j['singer'])
-            self.name=input('请输入歌名：')
-        else:
-            self.name=a
-            for n, i in enumerate(api):
-                req = self.sess.get(url=i.format(a, 2))
-                data = req.json()["data"]
-                print('from', api_name[n])
-                for j in data:
-                    print(j['name'],j['singer'])
-            self.singer=input('请输入歌手：')
-            self.pattern = re.compile(self.singer)
+        for n in range(3):
+            req = self.sess.get(url=api[n].format(a, 1))
+            data = req.json()["data"][0]
+            match = re.search(a, data["singer"])
+            if match:
+                self.singer=a
+                self.pattern = re.compile(a)
+                for n, i in enumerate(api):
+                    req = self.sess.get(url=i.format(a, 5))
+                    data = req.json()["data"]
+                    print('from',api_name[n])
+                    for j in data:
+                        if self.pattern.search(j["singer"]):
+                            print(j['name'],j['singer'])
+                self.name=input('请输入歌名：')
+                return 0
+        
+        self.name=a
+        for n, i in enumerate(api):
+            req = self.sess.get(url=i.format(a, 2))
+            data = req.json()["data"]
+            print('from', api_name[n])
+            for j in data:
+                print(j['name'],j['singer'])
+        self.singer=input('请输入歌手：')
+        self.pattern = re.compile(self.singer)
+            
+       
 
     def downloader(self, url):
         size = 0
